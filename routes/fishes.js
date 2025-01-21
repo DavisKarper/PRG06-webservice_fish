@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const limit = parseInt(req.query.limit) || 10
+        const limit = parseInt(req.query.limit) || 100
         const page = parseInt(req.query.page) || 1
 
         const skip = (page - 1) * limit
@@ -67,9 +67,22 @@ router.post('/', async (req, res) => {
 
             for (let i = 0; i < amount; i++) {
                 Fish.create({
-                    title: faker.word.words(1),
-                    description: faker.lorem.lines(3),
-                    review: faker.company.catchPhrase(1),
+                    name: faker.word.words(1),
+                    scientific_name: faker.lorem.lines(3),
+                    description: faker.company.catchPhrase(1),
+                    fun_facts: {
+                        0: faker.company.catchPhrase(1),
+                        1: faker.company.catchPhrase(1),
+                        2: faker.company.catchPhrase(1),
+                    },
+                    imageUrl: faker.image.urlLoremFlickr(),
+                    loc: {
+                        point: faker.location.timeZone(),
+                        coordinates: [
+                            faker.location.latitude(),
+                            faker.location.longitude()
+                        ]
+                    }
                 })
             }
             res.status(200).json({ message: `Er staan nu ${amount} vissen in de database en de database is ${reset ? '' : 'niet '}gereset.` })
@@ -150,27 +163,6 @@ router.options('/:id', (req, res) => {
     res.setHeader('Allow', 'GET, PUT, DELETE, OPTIONS')
     res.setHeader('Access-Control-Allow-Methods', ['GET', 'PUT', 'DELETE'])
     res.status(204).send();
-})
-
-router.post('/seed', async (req, res) => {
-    try {
-        const amount = req.body.amount
-        const reset = req.body.reset
-        if (reset) {
-            await Fish.deleteMany({})
-        }
-
-        for (let i = 0; i < amount; i++) {
-            Fish.create({
-                title: faker.word.words(1),
-                description: faker.lorem.lines(3),
-                review: faker.company.catchPhrase(1),
-            })
-        }
-        res.status(200).json({ message: `Er staan nu ${amount} vissen in de database en de database is ${reset ? '' : 'niet '}gereset.` })
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
 })
 
 export default router
