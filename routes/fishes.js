@@ -57,17 +57,38 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    try {
-        const { title, description, review } = req.body
+    if (req.body.method === "SEED") {
+        try {
+            const amount = req.body.amount
+            const reset = req.body.reset
+            if (reset) {
+                await Fish.deleteMany({})
+            }
 
-        const fish = await Fish.create({
-            title: title,
-            description: description,
-            review: review,
-        })
-        res.status(201).json(fish)
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+            for (let i = 0; i < amount; i++) {
+                Fish.create({
+                    title: faker.word.words(1),
+                    description: faker.lorem.lines(3),
+                    review: faker.company.catchPhrase(1),
+                })
+            }
+            res.status(200).json({ message: `Er staan nu ${amount} vissen in de database en de database is ${reset ? '' : 'niet '}gereset.` })
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    } else {
+        try {
+            const { title, description, review } = req.body
+
+            const fish = await Fish.create({
+                title: title,
+                description: description,
+                review: review,
+            })
+            res.status(201).json(fish)
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
     }
 })
 
