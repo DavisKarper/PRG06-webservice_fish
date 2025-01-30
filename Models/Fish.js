@@ -2,20 +2,24 @@ import mongoose from 'mongoose';
 
 const fishSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    scientific_name: { type: String, required: true },
+    scientificName: { type: String, required: true },
     description: { type: String, required: true },
-    fun_facts: {
-        0: { type: String, required: false },
-        1: { type: String, required: false },
-        2: { type: String, required: false }
+    funFacts: {
+        // 0: { type: String, required: false },
+        // 1: { type: String, required: false },
+        // 2: { type: String, required: false },
+        type: Array, required: false
     },
     imageUrl: { type: String, required: false },
     loc: {
-        point: { type: String, required: false },
-        coordinates: [
-            { type: Number, required: false },
-            { type: Number, required: false }
-        ]
+        type: {
+            point: { type: String, required: false },
+            coordinates: {
+                type: [Number], //latitude en longtitude
+                required: false
+            }
+        },
+        required: false
     }
 }, {
     toJSON: {

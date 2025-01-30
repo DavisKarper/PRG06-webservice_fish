@@ -13,20 +13,20 @@ app.use('/', (req, res, next) => {
     next();
 })
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use((req, res, next) => {
     const acceptHeader = req.headers.accept;
 
     console.log(`Client accepteert: ${acceptHeader}`);
 
-    if (acceptHeader !== 'application/json') {
+    if (acceptHeader !== 'application/json' && req.method !== 'OPTIONS') {
         res.status(406).send('You can only accept json');
         return;
     }
     next();
 });
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use('/fishes', fishes)
 
