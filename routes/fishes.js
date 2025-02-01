@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const limit = parseInt(req.query.limit) || 100
+        const limit = parseInt(req.query.limit)
         const page = parseInt(req.query.page) || 1
 
         const skip = (page - 1) * limit
@@ -593,7 +593,7 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const fishId = req.params.id
-        const { name, scientificName, description, funFacts, imageUrl } = req.body
+        const { name, scientificName, description, funFacts, imageUrl, location } = req.body
 
         const fish = await Fish.findByIdAndUpdate(
             fishId,
@@ -603,6 +603,13 @@ router.put('/:id', async (req, res) => {
                 description: description,
                 funFacts: funFacts,
                 imageUrl: imageUrl,
+                loc: {
+                    point: location,
+                    coordinates: [
+                        faker.location.latitude(),
+                        faker.location.longitude()
+                    ]
+                }
             },
             { new: true, runValidators: true });
 
@@ -621,14 +628,13 @@ router.delete('/:id', async (req, res) => {
         }
         res.status(204).json(fish)
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 })
 
 router.options('/:id', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Allow', 'GET, PUT, DELETE, OPTIONS')
     res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
     res.status(204).end();
 });
 
